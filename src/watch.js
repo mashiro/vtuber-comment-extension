@@ -15,13 +15,26 @@ const fetchBlobUrl = async url => {
   return window.URL.createObjectURL(blob)
 }
 
+const extractMessage = messageNode => {
+  return Array.from(messageNode.childNodes)
+    .map(node => {
+      switch (node.nodeName) {
+        case 'IMG':
+          return node.alt
+        default:
+          return node.textContent
+      }
+    })
+    .join('')
+}
+
 const checkComment = async node => {
   if (node.nodeName.toLowerCase() !== 'yt-live-chat-text-message-renderer') return
 
   const authorName = node.querySelector('#author-name').textContent
   if (nameList.some(value => value === authorName.trim())) {
     const liveTitle = parent.document.querySelector('#info .title').textContent
-    const message = node.querySelector('#message').textContent
+    const message = extractMessage(node.querySelector('#message'))
     const iconUrl = node.querySelector('#img').getAttribute('src')
     const iconLargeUrl = iconUrl.replace(/\/photo.jpg$/, '')
 
